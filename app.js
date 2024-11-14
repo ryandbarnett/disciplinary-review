@@ -1,18 +1,16 @@
 const express = require('express');
-const dotenv = require('dotenv');
 const path = require('path');
-const authRoutes = require('./routes/auth');  // Import authentication routes
-const { authenticateToken } = require('./middleware/authMiddleware');  // Import the authentication middleware
+const authRoutes = require('./routes/auth');
+const { authenticateToken } = require('./middleware/authMiddleware');
+const setupMiddleware = require('./middleware');
+const loadEnvConfig = require('./config/envConfig');
 
-dotenv.config();
+loadEnvConfig();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(express.json());
-
-// Serve static files (frontend assets)
-app.use(express.static(path.join(__dirname, 'public')));
+setupMiddleware(app);
 
 // Use authentication routes (login, register)
 app.use('/auth', authRoutes);
@@ -34,4 +32,4 @@ if (process.env.NODE_ENV !== 'test') {
   });
 }
 
-module.exports = app;  // Export the app for testing
+module.exports = app;
