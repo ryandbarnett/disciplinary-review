@@ -1,5 +1,4 @@
 const express = require('express');
-const path = require('path');
 const authRoutes = require('./routes/auth');
 const { authenticateToken } = require('./middleware/authMiddleware');
 const setupMiddleware = require('./middleware');
