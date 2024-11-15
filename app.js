@@ -16,7 +16,7 @@ app.use('/auth', authRoutes);
 
 // Protected route for dashboard
 app.get('/dashboard', authenticateToken, (req, res) => {
-  res.send('Welcome to the dashboard');
+  res.json({ message: 'Access granted to protected route', user: req.user });
 });
 
 // Basic route to test server
