@@ -1,11 +1,10 @@
 const request = require('supertest');
-const app = require('../../app'); // Import the app for testing
+const app = require('../../app');
 
 describe('Register User', () => {
   const email = `test${Date.now()}@example.com`;  // Ensure unique email for each test
   const password = 'securepassword';
 
-  // Test user registration
   it('should register a new user', async () => {
     const response = await request(app)
       .post('/auth/register')

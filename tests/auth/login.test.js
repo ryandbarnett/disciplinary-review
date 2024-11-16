@@ -1,5 +1,5 @@
 const request = require('supertest');
-const app = require('../../app'); // Import the app for testing
+const app = require('../../app');
 
 describe('Login User', () => {
   const email = `test${Date.now()}@example.com`;  // Ensure unique email for each test
@@ -15,7 +15,6 @@ describe('Login User', () => {
       });
   });
 
-  // Test user login
   it('should log in with correct credentials', async () => {
     const response = await request(app)
       .post('/auth/login')
