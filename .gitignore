@@ -8,7 +8,7 @@ node_modules/
 *.log
 
 # SQLite database files
-*.db
+/data/disciplinaryReview.db
 
 # VS Code settings (optional)
 .vscode/

@@ -2,7 +2,7 @@ const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 
 // Define the path for the database file
-const dbPath = path.resolve(__dirname, 'disciplinaryReview.db');
+const dbPath = path.resolve(__dirname, '../data/disciplinaryReview.db');
 
 // Connect to the SQLite database
 const db = new sqlite3.Database(dbPath, (err) => {
