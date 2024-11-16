@@ -8,7 +8,10 @@ const dbPath = path.resolve(__dirname, '../data/disciplinaryReview.db');
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
     console.error('Error connecting to the database:', err.message);
-  } else {
+    return;
+  }
+
+  if (process.env.NODE_ENV !== 'production') {
     console.log('Connected to the SQLite database');
   }
 });
@@ -51,8 +54,6 @@ db.serialize(() => {
     FOREIGN KEY (infraction_id) REFERENCES Infractions(infraction_id),
     FOREIGN KEY (voter_id) REFERENCES Voters(voter_id)
   )`);
-
-  console.log('Database tables created (if they did not already exist)');
 });
 
 module.exports = db;
