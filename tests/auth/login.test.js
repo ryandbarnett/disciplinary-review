@@ -1,41 +1,48 @@
+jest.mock('../../models/database'); 
+
+const bcrypt = require('bcrypt');
+const db = require('../../models/database');
 const request = require('supertest');
 const app = require('../../app');
 
 describe('Login User', () => {
-  const email = `test${Date.now()}@example.com`;  // Ensure unique email for each test
-  const password = 'securepassword';
+	const email = 'test@example.com';
+	const password = 'securepassword';
 
-  // First, create a user for login tests
-  beforeAll(async () => {
-    await request(app)
-      .post('/auth/register')
-      .send({
-        email: email,
-        password: password,
-      });
-  });
+	beforeEach(() => {
+		jest.clearAllMocks(); // Clear mocks before each test
+	});
 
-  it('should log in with correct credentials', async () => {
-    const response = await request(app)
-      .post('/auth/login')
-      .send({
-        email: email,
-        password: password,
-      });
+	it('should log in with correct credentials', async () => {
+		db.get.mockImplementation((query, params, callback) => {
+			const hashedPassword = bcrypt.hashSync(password, 10); // Simulate hashed password
+			callback(null, { email, password: hashedPassword }); // Simulated user
+		});
 
-    expect(response.status).toBe(200);
-    expect(response.body.token).toBeDefined();
-  });
+		const response = await request(app)
+			.post('/auth/login')
+			.send({
+				email: email,
+				password: password,
+			});
 
-  it('should not log in with incorrect credentials', async () => {
-    const response = await request(app)
-      .post('/auth/login')
-      .send({
-        email: email,
-        password: 'wrongpassword',
-      });
+		expect(response.status).toBe(200);
+		expect(response.body.token).toBeDefined();
+	});
 
-    expect(response.status).toBe(400);
-    expect(response.body.message).toBe('Invalid email or password');
-  });
+	it('should not log in with incorrect credentials', async () => {
+		db.get.mockImplementation((query, params, callback) => {
+			callback(null, null); // No user found
+		});
+
+		const response = await request(app)
+			.post('/auth/login')
+			.send({
+				email: email,
+				password: 'wrongpassword',
+			});
+
+		expect(response.status).toBe(400);
+		expect(response.body.message).toBe('Invalid email or password');
+	});
 });
