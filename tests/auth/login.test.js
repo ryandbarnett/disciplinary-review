@@ -3,6 +3,7 @@ jest.mock('../../models/database');
 const bcrypt = require('bcrypt');
 const db = require('../../models/database');
 const request = require('supertest');
+const jwt = require('jsonwebtoken');
 const app = require('../../app');
 
 // Helper to mock db.get
@@ -29,8 +30,29 @@ describe('Login User', () => {
 		hashedPassword = bcrypt.hashSync(password, 10); // Simulate hashed password
 	});
 
+	it('should log in with correct credentials and return a valid token', async () => {
+		mockDbGet({ user_id: 1, email, password: hashedPassword });
+
+
+		const response = await makeLoginRequest(email, password);
+
+		expect(response.status).toBe(200);
+		expect(response.body.token).toBeDefined();
+
+		// Decode the token to validate its structure
+		const decodedToken = jwt.decode(response.body.token); // Decode without verifying
+		expect(decodedToken).toHaveProperty('id');
+		expect(decodedToken).toHaveProperty('email', email);
+
+		// Verify the token signature
+		const secret = process.env.JWT_SECRET || 'defaultSecret'; // Replace with your actual secret
+		const verifiedToken = jwt.verify(response.body.token, secret);
+		expect(verifiedToken).toHaveProperty('id');
+		expect(verifiedToken).toHaveProperty('email', email);
+	});
+
 	it('should log in with correct credentials', async () => {
-		mockDbGet({ email, password: hashedPassword }); // Mock db.get with a valid user
+		mockDbGet({ user_id: 1, email, password: hashedPassword });
 
 		const response = await makeLoginRequest(email, password);
 

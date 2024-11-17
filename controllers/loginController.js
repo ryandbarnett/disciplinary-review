@@ -2,24 +2,28 @@ const bcrypt = require('bcrypt');
 const userModel = require('../models/user');
 const { generateToken, handleError } = require('../utils/authHelpers');
 
-// Login user
 const loginUser = async (req, res) => {
-  const { email, password } = req.body;
+	const { email, password } = req.body;
 
-  try {
-    const user = await userModel.findUserByEmail(email);
+	// Check for missing fields
+	if (!email || !password) {
+		return res.status(400).json({ message: 'Email and password are required' });
+	}
 
-    // Validate user and password
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(400).json({ message: 'Invalid email or password' });
-    }
+	try {
+		const user = await userModel.findUserByEmail(email);
 
-    // Generate token and respond
-    const token = generateToken(user.user_id);
-    res.json({ token });
-  } catch (error) {
-    handleError(res, error, 'Server error');
-  }
+		// Validate user and password
+		if (!user || !(await bcrypt.compare(password, user.password))) {
+			return res.status(400).json({ message: 'Invalid email or password' });
+		}
+
+		// Generate token with user_id and email
+		const token = generateToken(user.user_id, user.email);
+		res.json({ token });
+	} catch (error) {
+		handleError(res, error, 'Internal server error');
+	}
 };
 
 module.exports = { loginUser };
