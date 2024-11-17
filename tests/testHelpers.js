@@ -39,6 +39,16 @@ const expectOnlyErrorMockedCalls = (mock, expectedCallCount = 1) => {
     expect(mock).toHaveBeenCalledTimes(expectedCallCount);
 };
 
+const handleDatabaseAssertions = (db, requestData, dbMock, expected, response) => {
+    if (expected.validLogin) {
+        validateSuccessfulLogin(response, dbMock, requestData, db);
+    } else if (expected.noDbCall) {
+        expectNoDatabaseCalls(db.get);
+    } else {
+        expectDatabaseCall(db.get, 'SELECT * FROM Users WHERE email = ?', [requestData.email]);
+    }
+};
+
 // Mock bcrypt module
 jest.mock('bcrypt', () => ({
     hash: jest.fn(() => Promise.resolve('hashedpassword')),
@@ -105,7 +115,8 @@ module.exports = {
     expectValidLogin,
     expectBcryptCompare,
     expectDbGetCalled,
-    expectOnlyErrorMockedCalls,  
+    expectOnlyErrorMockedCalls,
+    handleDatabaseAssertions,  
     mockUserModel,
     mockDbGet,
     mockDbGetError,

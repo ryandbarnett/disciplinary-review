@@ -7,9 +7,7 @@ const {
     makeRequest,
     mockDbGet,
     mockDbGetError,
-    validateSuccessfulLogin,
-    expectNoDatabaseCalls,
-    expectDatabaseCall,
+    handleDatabaseAssertions
 } = require('../testHelpers');
 const loginScenarios = require('../testScenarios/loginScenarios');
 const db = require('../../models/database');
@@ -21,17 +19,6 @@ const setupDbMock = (dbMock) => {
         mockDbGetError(db, dbMock.error);
     } else {
         mockDbGet(db, dbMock.result);
-    }
-};
-
-// Helper to handle database-related assertions
-const handleDatabaseAssertions = (db, requestData, dbMock, expected, response) => {
-    if (expected.validLogin) {
-        validateSuccessfulLogin(response, dbMock, requestData, db);
-    } else if (expected.noDbCall) {
-        expectNoDatabaseCalls(db.get);
-    } else {
-        expectDatabaseCall(db.get, 'SELECT * FROM Users WHERE email = ?', [requestData.email]);
     }
 };
 
