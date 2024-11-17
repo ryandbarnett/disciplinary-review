@@ -3,7 +3,15 @@ jest.mock('bcrypt', () => ({
     compare: jest.fn((plain, hashed) => Promise.resolve(plain === 'securepassword' && hashed === 'hashedpassword')),
 }));
 
-const { mockDbGet, mockDbGetError, makeRequest, expectValidLogin, expectBcryptCompare, expectDbGetCalled } = require('../testHelpers');
+const {
+    mockDbGet,
+    mockDbGetError,
+    makeRequest,
+    expectValidLogin,
+    expectBcryptCompare,
+    expectNoDatabaseCalls,
+    expectDatabaseCall
+} = require('../testHelpers');
 const db = require('../../models/database');
 const app = require('../../app');
 
@@ -27,7 +35,7 @@ describe('Login User', () => {
 
         expectValidLogin(response, 1, email);
         expectBcryptCompare(password, 'hashedpassword');
-        expectDbGetCalled(db, email);
+        expectDatabaseCall(db.get, 'SELECT * FROM Users WHERE email = ?', [email]);
     });
 
     it('should not log in with incorrect credentials', async () => {
@@ -37,6 +45,8 @@ describe('Login User', () => {
 
         expect(response.status).toBe(400);
         expect(response.body.message).toBe('Invalid email or password');
+
+        expectDatabaseCall(db.get, 'SELECT * FROM Users WHERE email = ?', [email]);
     });
 
     it('should return 400 if email or password is missing', async () => {
@@ -47,6 +57,8 @@ describe('Login User', () => {
         const response2 = await makeRequest(app, endpoint, { email, password: '' });
         expect(response2.status).toBe(400);
         expect(response2.body.message).toBe('Email and password are required');
+
+        expectNoDatabaseCalls(db.get);
     });
 
     it('should return 500 if a database error occurs', async () => {
@@ -56,6 +68,7 @@ describe('Login User', () => {
         expect(response.status).toBe(500);
         expect(response.body.message).toBe('Internal server error');
 
-        expectDbGetCalled(db, email);
+        // Ensure the database call was attempted
+        expectDatabaseCall(db.get, 'SELECT * FROM Users WHERE email = ?', [email]);
     });
 });

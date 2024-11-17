@@ -1,7 +1,7 @@
 jest.mock('../../models/database'); // Automatically use the mock database
 jest.mock('../../models/user'); // Mock the user model
 
-const { mockUserModel, makeRequest } = require('../testHelpers');
+const { mockUserModel, makeRequest, expectNoDatabaseCalls } = require('../testHelpers');
 const userModel = require('../../models/user');
 const app = require('../../app');
 
@@ -46,8 +46,7 @@ describe('Register User', () => {
 
 		expect(response.status).toBe(400);
 		expect(response.body.message).toBe('Invalid email format');
-		expect(userModel.findUserByEmail).not.toHaveBeenCalled();
-		expect(userModel.createUser).not.toHaveBeenCalled();
+		expectNoDatabaseCalls(userModel.findUserByEmail, userModel.createUser);
 	});
 
 	it('should return 400 for weak password', async () => {
@@ -57,8 +56,7 @@ describe('Register User', () => {
 
 		expect(response.status).toBe(400);
 		expect(response.body.message).toBe('Password does not meet requirements');
-		expect(userModel.findUserByEmail).not.toHaveBeenCalled();
-		expect(userModel.createUser).not.toHaveBeenCalled();
+		expectNoDatabaseCalls(userModel.findUserByEmail, userModel.createUser);
 	});
 
 	it('should return 500 on database error', async () => {

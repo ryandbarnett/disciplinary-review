@@ -25,6 +25,16 @@ const expectDbGetCalled = (db, email) => {
     );
 };
 
+const expectNoDatabaseCalls = (...mocks) => {
+    mocks.forEach((mock) => {
+        expect(mock).not.toHaveBeenCalled();
+    });
+};
+
+const expectDatabaseCall = (mock, query, params) => {
+    expect(mock).toHaveBeenCalledWith(query, params, expect.any(Function));
+};
+
 // Mock bcrypt module
 jest.mock('bcrypt', () => ({
     hash: jest.fn(() => Promise.resolve('hashedpassword')),
@@ -57,6 +67,8 @@ const mockDbGetError = (db, error) => {
 const makeRequest = (app, endpoint, payload) => request(app).post(endpoint).send(payload);
 
 module.exports = {
+    expectNoDatabaseCalls,
+    expectDatabaseCall,
     expectValidLogin,
     expectBcryptCompare,
     expectDbGetCalled,  
