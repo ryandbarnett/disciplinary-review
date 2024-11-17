@@ -1,12 +1,12 @@
 jest.mock('../../models/database'); // Automatically use the mock database
 jest.mock('../../models/user'); // Mock the user model
+jest.mock('bcrypt', () => ({
+    hash: jest.fn(() => Promise.resolve('hashedpassword')), // Mocked hashed password
+}));
 
-const { 
-    mockUserModel, 
-    makeRequest, 
-    handleRegisterDatabaseAssertions, 
-    setupMock
-} = require('../testHelpers');
+const { makeRequest } = require('../helpers/requestHelpers');
+const { mockUserModel, setupMock } = require('../helpers/mockHelpers');
+const { handleRegisterDatabaseAssertions } = require('../helpers/assertionHelpers');
 
 const registerScenarios = require('../testScenarios/registerScenarios');
 const userModel = require('../../models/user');
@@ -53,7 +53,7 @@ describe('Register User', () => {
             }
 
             // Validate database interactions
-            handleRegisterDatabaseAssertions({ userModel, requestData, expected });
+            handleRegisterDatabaseAssertions({ userModel, requestData, expected, response });
         });
     });
 });

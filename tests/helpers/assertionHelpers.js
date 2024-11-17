@@ -1,4 +1,3 @@
-// assertionHelpers.js
 const jwt = require('jsonwebtoken');
 
 const checkResponse = (response, expected) => {
@@ -27,7 +26,29 @@ const handleDatabaseAssertions = (db, requestData, dbMock, expected, response) =
   }
 };
 
+const handleRegisterDatabaseAssertions = ({ userModel, requestData, expected }) => {
+  if (expected.noDbCall) {
+    expect(userModel.findUserByEmail).not.toHaveBeenCalled();
+    expect(userModel.createUser).not.toHaveBeenCalled();
+  } else {
+    // Check if findUserByEmail was called
+    expect(userModel.findUserByEmail).toHaveBeenCalledWith(requestData.email);
+
+    // If the user exists, createUser should not be called
+    if (expected.userExists === true) {
+      expect(userModel.createUser).not.toHaveBeenCalled();
+    } else {
+      // If the user does not exist, createUser should be called
+      expect(userModel.createUser).toHaveBeenCalledWith(
+        requestData.email,
+        'hashedpassword' // Use the mocked hashed password
+      );
+    }
+  }
+};
+
 module.exports = {
   checkResponse,
   handleDatabaseAssertions,
+  handleRegisterDatabaseAssertions
 };

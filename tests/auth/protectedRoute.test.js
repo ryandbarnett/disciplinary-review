@@ -1,7 +1,9 @@
 jest.mock('../../models/database');
 jest.mock('jsonwebtoken');
 
-const { makeRequest, mockJwtVerify } = require('../testHelpers');
+
+const { makeRequest } = require('../helpers/requestHelpers');
+const { mockJwtVerify } = require('../helpers/utilityHelpers');
 const app = require('../../app');
 const scenarios = require('../testScenarios/protectedRouteScenarios');
 
