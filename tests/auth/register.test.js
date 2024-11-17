@@ -20,7 +20,7 @@ describe('Register User', () => {
 		mockFindUserByEmail(null); // User does not exist
 		mockCreateUser(1); // Simulate successful user creation
 
-		const response = await makeRequest(app, endpoint, { email, password });
+		const response = await makeRequest(app, 'post', endpoint, {payload: { email, password }});
 
 		expect(response.status).toBe(201);
 		expect(response.body.message).toBe('User registered successfully');
@@ -31,7 +31,7 @@ describe('Register User', () => {
 	it('should not register a user with an existing email', async () => {
 		mockFindUserByEmail({ email }); // User exists
 
-		const response = await makeRequest(app, endpoint, { email, password });
+		const response = await makeRequest(app, 'post', endpoint, {payload: { email, password }});
 
 		expect(response.status).toBe(400);
 		expect(response.body.message).toBe('User already exists');
@@ -42,7 +42,7 @@ describe('Register User', () => {
 	it('should return 400 for invalid email', async () => {
 		const invalidEmail = 'invalid-email';
 
-		const response = await makeRequest(app, endpoint, { email: invalidEmail, password });
+		const response = await makeRequest(app, 'post', endpoint, {payload: { email: invalidEmail, password }});
 
 		expect(response.status).toBe(400);
 		expect(response.body.message).toBe('Invalid email format');
@@ -52,7 +52,7 @@ describe('Register User', () => {
 	it('should return 400 for weak password', async () => {
 		const weakPassword = '123'; // Weak password
 
-		const response = await makeRequest(app, endpoint, { email, password: weakPassword });
+		const response = await makeRequest(app, 'post', endpoint, {payload: { email, password: weakPassword }});
 
 		expect(response.status).toBe(400);
 		expect(response.body.message).toBe('Password does not meet requirements');
@@ -63,7 +63,7 @@ describe('Register User', () => {
 		mockFindUserByEmail(null); // User does not exist
 		mockCreateUserError(new Error('Database error')); // Simulate DB error
 
-		const response = await makeRequest(app, endpoint, { email, password });
+		const response = await makeRequest(app, 'post', endpoint, {payload: { email, password }});
 
 		expect(response.status).toBe(500);
 		expect(response.body.message).toBe('Internal server error');

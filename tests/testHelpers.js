@@ -74,7 +74,16 @@ const mockJwtVerify = (isValid = true) => {
 };
 
 // Helper for making login/register requests
-const makeRequest = (app, endpoint, payload) => request(app).post(endpoint).send(payload);
+const makeRequest = (app, method, endpoint, options = {}) => {
+    const { token, payload } = options;
+    const requestBuilder = request(app)[method](endpoint);
+
+    if (token) requestBuilder.set('Authorization', `Bearer ${token}`);
+
+    if (payload) requestBuilder.send(payload);
+
+    return requestBuilder;
+};
 
 module.exports = {
     expectNoDatabaseCalls,
