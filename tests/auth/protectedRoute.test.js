@@ -1,46 +1,54 @@
+jest.mock('../../models/database'); // Mock the database if required
+jest.mock('jsonwebtoken'); // Mock the JWT library
+
+const jwt = require('jsonwebtoken');
 const request = require('supertest');
-const app = require('../../app'); // Import the app for testing
+const app = require('../../app');
+
+// Helper to mock JWT verification
+const mockJwtVerify = (isValid = true) => {
+	jwt.verify.mockImplementation((token, secret, callback) => {
+		if (isValid && token === 'validToken') {
+			callback(null, { id: 1, email: 'test@example.com' }); // Simulated valid payload
+		} else {
+			callback(new Error('Invalid token'));
+		}
+	});
+};
+
+// Helper to make requests to the protected route
+const makeRequest = (token) => {
+	const requestBuilder = request(app).get('/dashboard');
+	return token ? requestBuilder.set('Authorization', `Bearer ${token}`) : requestBuilder;
+};
 
 describe('Protected Route', () => {
-  let validToken;
-  
-  // Create a valid token for testing
-  beforeAll(async () => {
-    const response = await request(app)
-      .post('/auth/login')
-      .send({
-        email: 'test@example.com',  // Replace with a test user
-        password: 'securepassword', // Replace with the correct password
-      });
+	let validToken;
 
-    validToken = response.body.token;
-  });
+	beforeAll(() => {
+		validToken = 'validToken'; // Use a hardcoded valid token
+	});
 
-  // Test if protected route returns success with valid token
-  it('should allow access to the protected route with a valid token', async () => {
-    const response = await request(app)
-      .get('/dashboard')  // Protected route
-      .set('Authorization', `Bearer ${validToken}`);  // Add token to headers
+	it('should allow access to the protected route with a valid token', async () => {
+		mockJwtVerify(true); // Mock valid token
+		const response = await makeRequest(validToken);
 
-    expect(response.status).toBe(200);
-    expect(response.body.message).toBe('Access granted to protected route');
-  });
+		expect(response.status).toBe(200);
+		expect(response.body.message).toBe('Access granted to protected route');
+	});
 
-  // Test if protected route returns 401 if no token is provided
-  it('should return 401 if no token is provided', async () => {
-    const response = await request(app).get('/dashboard');  // No token
+	it('should return 401 if no token is provided', async () => {
+		const response = await makeRequest();
 
-    expect(response.status).toBe(401);
-    expect(response.body.message).toBe('Access token missing');
-  });
+		expect(response.status).toBe(401);
+		expect(response.body.message).toBe('Access token missing');
+	});
 
-  // Test if protected route returns 403 for invalid token
-  it('should return 403 if an invalid token is provided', async () => {
-    const response = await request(app)
-      .get('/dashboard')  // Protected route
-      .set('Authorization', 'Bearer invalidtoken');  // Invalid token
+	it('should return 403 if an invalid token is provided', async () => {
+		mockJwtVerify(false); // Mock invalid token
+		const response = await makeRequest('invalidToken');
 
-    expect(response.status).toBe(403);
-    expect(response.body.message).toBe('Invalid token');
-  });
+		expect(response.status).toBe(403);
+		expect(response.body.message).toBe('Invalid token');
+	});
 });
