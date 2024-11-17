@@ -15,14 +15,19 @@ To run the project locally:
 
 1. Clone the repository.
 2. Install dependencies:
+   
     ```bash
     npm install
     ```
+    
 3. Set up the environment variables (e.g., JWT_SECRET). You can create a `.env` file in the root directory of the project and add the following:
+
     ```bash
     JWT_SECRET=your_secret_key
     ```
+    
 4. Start the application:
+
     ```bash
     npm start
     ```
