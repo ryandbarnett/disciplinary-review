@@ -131,6 +131,33 @@ const setupDbMock = (db, dbMock) => {
     }
 };
 
+const setupCreateUserMock = ({ createUserMockResult, createUserMockError, mockCreateUser, mockCreateUserError }) => {
+    if (createUserMockError) {
+      mockCreateUserError(createUserMockError);
+    } else if (createUserMockResult) {
+      mockCreateUser(createUserMockResult);
+    }
+};
+
+const setupUserMocks = ({
+    mockFindUserByEmail,
+    mockCreateUser,
+    mockCreateUserError,
+    userExistsMock,
+    createUserMockResult,
+    createUserMockError,
+  }) => {
+    // Mock user existence
+    mockFindUserByEmail(userExistsMock || null);
+  
+    // Mock user creation (success or error)
+    if (createUserMockError) {
+      mockCreateUserError(createUserMockError);
+    } else {
+      mockCreateUser(createUserMockResult || null);
+    }
+};
+
 const validateSuccessfulLogin = (response, dbMock, requestData, db) => {
     if (!dbMock.result) {
         throw new Error('dbMock.result is required for a valid login scenario');
@@ -157,5 +184,7 @@ module.exports = {
     mockJwtVerify,
     makeRequest,
     setupDbMock,
+    setupCreateUserMock,
+    setupUserMocks,
     validateSuccessfulLogin
 };

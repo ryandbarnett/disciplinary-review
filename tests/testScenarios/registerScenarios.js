@@ -1,8 +1,9 @@
 const registerScenarios = [
     {
         description: 'should register a new user',
-        mockUserExists: null,
-        mockCreateUser: 1,
+        userExistsMock: null, // Renamed from mockUserExists
+        createUserMockResult: 1, // Renamed from mockCreateUser
+        createUserMockError: null, // Added for consistency with other scenarios
         requestData: { email: `test${Date.now()}@example.com`, password: 'securepassword' },
         expected: {
             status: 201,
@@ -11,8 +12,9 @@ const registerScenarios = [
     },
     {
         description: 'should not register a user with an existing email',
-        mockUserExists: { email: 'existing@example.com' },
-        mockCreateUser: null,
+        userExistsMock: { email: 'existing@example.com' },
+        createUserMockResult: null,
+        createUserMockError: null,
         requestData: { email: 'existing@example.com', password: 'securepassword' },
         expected: {
             status: 400,
@@ -21,8 +23,9 @@ const registerScenarios = [
     },
     {
         description: 'should return 400 for invalid email',
-        mockUserExists: null,
-        mockCreateUser: null,
+        userExistsMock: null,
+        createUserMockResult: null,
+        createUserMockError: null,
         requestData: { email: 'invalid-email', password: 'securepassword' },
         expected: {
             status: 400,
@@ -31,8 +34,9 @@ const registerScenarios = [
     },
     {
         description: 'should return 400 for weak password',
-        mockUserExists: null,
-        mockCreateUser: null,
+        userExistsMock: null,
+        createUserMockResult: null,
+        createUserMockError: null,
         requestData: { email: `test${Date.now()}@example.com`, password: '123' },
         expected: {
             status: 400,
@@ -41,8 +45,9 @@ const registerScenarios = [
     },
     {
         description: 'should return 500 on database error',
-        mockUserExists: null,
-        mockCreateUserError: new Error('Database error'),
+        userExistsMock: null,
+        createUserMockResult: null,
+        createUserMockError: new Error('Database error'), // Renamed for consistency
         requestData: { email: `test${Date.now()}@example.com`, password: 'securepassword' },
         expected: {
             status: 500,
