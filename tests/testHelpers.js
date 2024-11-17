@@ -99,6 +99,14 @@ const makeRequest = (app, method, endpoint, options = {}) => {
     return requestBuilder;
 };
 
+const setupDbMock = (db, dbMock) => {
+    if (dbMock.error) {
+        mockDbGetError(db, dbMock.error);
+    } else {
+        mockDbGet(db, dbMock.result);
+    }
+};
+
 const validateSuccessfulLogin = (response, dbMock, requestData, db) => {
     if (!dbMock.result) {
         throw new Error('dbMock.result is required for a valid login scenario');
@@ -122,5 +130,6 @@ module.exports = {
     mockDbGetError,
     mockJwtVerify,
     makeRequest,
+    setupDbMock,
     validateSuccessfulLogin
 };

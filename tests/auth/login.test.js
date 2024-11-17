@@ -3,24 +3,10 @@ jest.mock('bcrypt', () => ({
     compare: jest.fn((plain, hashed) => Promise.resolve(plain === 'securepassword' && hashed === 'hashedpassword')),
 }));
 
-const {
-    makeRequest,
-    mockDbGet,
-    mockDbGetError,
-    handleDatabaseAssertions
-} = require('../testHelpers');
+const { makeRequest,setupDbMock,handleDatabaseAssertions } = require('../testHelpers');
 const loginScenarios = require('../testScenarios/loginScenarios');
 const db = require('../../models/database');
 const app = require('../../app');
-
-// Helper to set up the database mock
-const setupDbMock = (dbMock) => {
-    if (dbMock.error) {
-        mockDbGetError(db, dbMock.error);
-    } else {
-        mockDbGet(db, dbMock.result);
-    }
-};
 
 describe('Login User', () => {
     const endpoint = '/auth/login';
@@ -35,7 +21,7 @@ describe('Login User', () => {
 
     loginScenarios.forEach(({ description, dbMock, requestData, expected }) => {
         it(description, async () => {
-            setupDbMock(dbMock);
+            setupDbMock(db, dbMock);
         
             const response = await makeRequest(app, 'post', endpoint, { payload: requestData });
         
