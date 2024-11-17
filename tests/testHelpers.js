@@ -56,6 +56,23 @@ const handleDatabaseAssertions = (db, requestData, dbMock, expected, response) =
     }
 };
 
+const handleRegisterDatabaseAssertions = ({ userModel, requestData, expected }) => {
+    if (expected.status === 201) {
+      // Successful registration
+      expect(userModel.createUser).toHaveBeenCalledWith(
+        requestData.email,
+        expect.any(String) // Ensure password hashing occurred
+      );
+      expect(bcrypt.hash).toHaveBeenCalledWith(requestData.password, expect.any(Number));
+    } else if (expected.status === 500) {
+      // Internal server error occurred during user creation
+      expectOnlyErrorMockedCalls(userModel.createUser);
+    } else {
+      // For other error cases, ensure createUser was not called
+      expectNoDatabaseCalls(userModel.createUser);
+    }
+  };
+
 // Mock bcrypt module
 jest.mock('bcrypt', () => ({
     hash: jest.fn(() => Promise.resolve('hashedpassword')),
@@ -132,7 +149,8 @@ module.exports = {
     expectBcryptCompare,
     expectDbGetCalled,
     expectOnlyErrorMockedCalls,
-    handleDatabaseAssertions,  
+    handleDatabaseAssertions,
+    handleRegisterDatabaseAssertions,  
     mockUserModel,
     mockDbGet,
     mockDbGetError,

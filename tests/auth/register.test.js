@@ -1,7 +1,7 @@
 jest.mock('../../models/database'); // Automatically use the mock database
 jest.mock('../../models/user'); // Mock the user model
 
-const { mockUserModel, makeRequest, expectNoDatabaseCalls, expectOnlyErrorMockedCalls } = require('../testHelpers');
+const { mockUserModel, makeRequest, handleRegisterDatabaseAssertions } = require('../testHelpers');
 const registerScenarios = require('../testScenarios/registerScenarios');
 const userModel = require('../../models/user');
 const app = require('../../app');
@@ -37,17 +37,7 @@ describe('Register User', () => {
             expect(response.status).toBe(expected.status);
             expect(response.body.message).toBe(expected.message);
 
-            // Validate database calls
-            if (expected.status === 201) {
-                expect(userModel.createUser).toHaveBeenCalledWith(
-                    requestData.email,
-                    expect.any(String) // Ensure password hashing occurred
-                );
-            } else if (expected.status === 500) {
-                expectOnlyErrorMockedCalls(userModel.createUser);
-            } else {
-                expectNoDatabaseCalls(userModel.createUser);
-            }
+            handleRegisterDatabaseAssertions({userModel, requestData, expected});
         });
     });
 });
