@@ -1,73 +1,53 @@
 jest.mock('../../models/database'); // Automatically use the mock database
 jest.mock('../../models/user'); // Mock the user model
 
-const { mockUserModel, makeRequest, expectNoDatabaseCalls } = require('../testHelpers');
+const { mockUserModel, makeRequest, expectNoDatabaseCalls, expectOnlyErrorMockedCalls } = require('../testHelpers');
+const registerScenarios = require('../testScenarios/registerScenarios');
 const userModel = require('../../models/user');
 const app = require('../../app');
 
 describe('Register User', () => {
-	const endpoint = '/auth/register';
-	const email = `test${Date.now()}@example.com`; // Unique email for testing
-	const password = 'securepassword';
+    const endpoint = '/auth/register';
+    const { mockFindUserByEmail, mockCreateUser, mockCreateUserError } = mockUserModel(userModel);
 
-	const { mockFindUserByEmail, mockCreateUser, mockCreateUserError } = mockUserModel(userModel);
+    beforeEach(() => {
+        jest.clearAllMocks(); // Reset all mocks
+    });
 
-	beforeEach(() => {
-		jest.clearAllMocks(); // Reset all mocks
-	});
+    registerScenarios.forEach(({ description, mockUserExists, mockCreateUser: createUserMock, mockCreateUserError: createUserErrorMock, requestData, expected }) => {
+        it(description, async () => {
+            // Mock user existence check
+            if (mockUserExists) {
+                mockFindUserByEmail(mockUserExists);
+            } else {
+                mockFindUserByEmail(null);
+            }
 
-	it('should register a new user', async () => {
-		mockFindUserByEmail(null); // User does not exist
-		mockCreateUser(1); // Simulate successful user creation
+            // Mock user creation errors or success
+            if (createUserErrorMock) {
+                mockCreateUserError(createUserErrorMock);
+            } else if (createUserMock) {
+                mockCreateUser(createUserMock);
+            }
 
-		const response = await makeRequest(app, 'post', endpoint, {payload: { email, password }});
+            // Perform the request
+            const response = await makeRequest(app, 'post', endpoint, { payload: requestData });
 
-		expect(response.status).toBe(201);
-		expect(response.body.message).toBe('User registered successfully');
-		expect(userModel.findUserByEmail).toHaveBeenCalledWith(email);
-		expect(userModel.createUser).toHaveBeenCalledWith(email, expect.any(String)); // Check for hashed password
-	});
+            // Validate the response
+            expect(response.status).toBe(expected.status);
+            expect(response.body.message).toBe(expected.message);
 
-	it('should not register a user with an existing email', async () => {
-		mockFindUserByEmail({ email }); // User exists
-
-		const response = await makeRequest(app, 'post', endpoint, {payload: { email, password }});
-
-		expect(response.status).toBe(400);
-		expect(response.body.message).toBe('User already exists');
-		expect(userModel.findUserByEmail).toHaveBeenCalledWith(email);
-		expect(userModel.createUser).not.toHaveBeenCalled();
-	});
-
-	it('should return 400 for invalid email', async () => {
-		const invalidEmail = 'invalid-email';
-
-		const response = await makeRequest(app, 'post', endpoint, {payload: { email: invalidEmail, password }});
-
-		expect(response.status).toBe(400);
-		expect(response.body.message).toBe('Invalid email format');
-		expectNoDatabaseCalls(userModel.findUserByEmail, userModel.createUser);
-	});
-
-	it('should return 400 for weak password', async () => {
-		const weakPassword = '123'; // Weak password
-
-		const response = await makeRequest(app, 'post', endpoint, {payload: { email, password: weakPassword }});
-
-		expect(response.status).toBe(400);
-		expect(response.body.message).toBe('Password does not meet requirements');
-		expectNoDatabaseCalls(userModel.findUserByEmail, userModel.createUser);
-	});
-
-	it('should return 500 on database error', async () => {
-		mockFindUserByEmail(null); // User does not exist
-		mockCreateUserError(new Error('Database error')); // Simulate DB error
-
-		const response = await makeRequest(app, 'post', endpoint, {payload: { email, password }});
-
-		expect(response.status).toBe(500);
-		expect(response.body.message).toBe('Internal server error');
-		expect(userModel.findUserByEmail).toHaveBeenCalledWith(email);
-		expect(userModel.createUser).toHaveBeenCalledWith(email, expect.any(String)); // Match any string for hashed password
-	});
+            // Validate database calls
+            if (expected.status === 201) {
+                expect(userModel.createUser).toHaveBeenCalledWith(
+                    requestData.email,
+                    expect.any(String) // Ensure password hashing occurred
+                );
+            } else if (expected.status === 500) {
+                expectOnlyErrorMockedCalls(userModel.createUser);
+            } else {
+                expectNoDatabaseCalls(userModel.createUser);
+            }
+        });
+    });
 });

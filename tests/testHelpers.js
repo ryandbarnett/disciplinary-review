@@ -35,6 +35,10 @@ const expectDatabaseCall = (mock, query, params) => {
     expect(mock).toHaveBeenCalledWith(query, params, expect.any(Function));
 };
 
+const expectOnlyErrorMockedCalls = (mock, expectedCallCount = 1) => {
+    expect(mock).toHaveBeenCalledTimes(expectedCallCount);
+};
+
 // Mock bcrypt module
 jest.mock('bcrypt', () => ({
     hash: jest.fn(() => Promise.resolve('hashedpassword')),
@@ -90,7 +94,8 @@ module.exports = {
     expectDatabaseCall,
     expectValidLogin,
     expectBcryptCompare,
-    expectDbGetCalled,  
+    expectDbGetCalled,
+    expectOnlyErrorMockedCalls,  
     mockUserModel,
     mockDbGet,
     mockDbGetError,
