@@ -63,6 +63,16 @@ const mockDbGetError = (db, error) => {
     });
 };
 
+const mockJwtVerify = (isValid = true) => {
+    jwt.verify.mockImplementation((token, secret, callback) => {
+        if (isValid && token === 'validToken') {
+            callback(null, { id: 1, email: 'test@example.com' }); // Simulated valid payload
+        } else {
+            callback(new Error('Invalid token'));
+        }
+    });
+};
+
 // Helper for making login/register requests
 const makeRequest = (app, endpoint, payload) => request(app).post(endpoint).send(payload);
 
@@ -75,5 +85,6 @@ module.exports = {
     mockUserModel,
     mockDbGet,
     mockDbGetError,
+    mockJwtVerify,
     makeRequest
 };
