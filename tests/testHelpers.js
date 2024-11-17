@@ -2,6 +2,13 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const request = require('supertest');
 
+const checkResponse = (response, expected) => {
+    expect(response.status).toBe(expected.status);
+    if ('message' in expected) {
+        expect(response.body.message || null).toBe(expected.message);
+    }
+};
+
 // Helper for validating login responses
 const expectValidLogin = (response, expectedUserId, expectedEmail) => {
     expect(response.status).toBe(200);
@@ -118,6 +125,7 @@ const validateSuccessfulLogin = (response, dbMock, requestData, db) => {
 };
 
 module.exports = {
+    checkResponse,
     expectNoDatabaseCalls,
     expectDatabaseCall,
     expectValidLogin,
