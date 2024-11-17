@@ -9,6 +9,7 @@ node_modules/
 
 # SQLite database files
 /data/disciplinaryReview.db
+*.db-journal
 
 # VS Code settings (optional)
 .vscode/
