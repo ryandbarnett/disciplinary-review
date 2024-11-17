@@ -13,7 +13,6 @@ const loginUser = async (req, res) => {
 	try {
 		const user = await userModel.findUserByEmail(email);
 
-		// Validate user and password
 		if (!user || !(await bcrypt.compare(password, user.password))) {
 			return res.status(400).json({ message: 'Invalid email or password' });
 		}

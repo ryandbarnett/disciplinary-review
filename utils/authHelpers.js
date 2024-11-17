@@ -8,9 +8,11 @@ const generateToken = (id, email) => {
   return jwt.sign(payload, secret, options);
 };
 
-// Handle errors and standardize responses
+// utils/authHelpers.js
 const handleError = (res, error, message) => {
-  console.error(error);  // Log the error for debugging
+  if (process.env.NODE_ENV !== 'test') {
+      console.error(error); // Log only if not in test environment
+  }
   res.status(500).json({ message });
 };
 

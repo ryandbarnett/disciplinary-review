@@ -10,10 +10,6 @@ const db = new sqlite3.Database(dbPath, (err) => {
     console.error('Error connecting to the database:', err.message);
     return;
   }
-
-  if (process.env.NODE_ENV !== 'production') {
-    console.log('Connected to the SQLite database');
-  }
 });
 
 // Define the tables

@@ -1,12 +1,36 @@
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 const request = require('supertest');
+
+// Helper for validating login responses
+const expectValidLogin = (response, expectedUserId, expectedEmail) => {
+    expect(response.status).toBe(200);
+    expect(response.body.token).toBeDefined();
+    const decodedToken = jwt.decode(response.body.token);
+    expect(decodedToken).toHaveProperty('id', expectedUserId);
+    expect(decodedToken).toHaveProperty('email', expectedEmail);
+};
+
+// Helper for validating bcrypt.compare calls
+const expectBcryptCompare = (plain, hashed) => {
+    expect(bcrypt.compare).toHaveBeenCalledWith(plain, hashed);
+};
+
+// Helper for validating db.get calls
+const expectDbGetCalled = (db, email) => {
+    expect(db.get).toHaveBeenCalledWith(
+        'SELECT * FROM Users WHERE email = ?',
+        [email],
+        expect.any(Function)
+    );
+};
 
 // Mock bcrypt module
 jest.mock('bcrypt', () => ({
     hash: jest.fn(() => Promise.resolve('hashedpassword')),
     hashSync: jest.fn((password, salt) => 'hashedpassword'),
-    compare: jest.fn((plain, hashed) => Promise.resolve(plain === hashed)), // Simulate password comparison
+    compare: jest.fn((plain, hashed) => Promise.resolve(plain === 'securepassword' && hashed === 'hashedpassword')), // Simulate password comparison
 }));
-  
 
 // Mock userModel methods
 const mockUserModel = (userModel) => ({
@@ -33,8 +57,11 @@ const mockDbGetError = (db, error) => {
 const makeRequest = (app, endpoint, payload) => request(app).post(endpoint).send(payload);
 
 module.exports = {
-  mockUserModel,
-  mockDbGet,
-  mockDbGetError,
-  makeRequest,
+    expectValidLogin,
+    expectBcryptCompare,
+    expectDbGetCalled,  
+    mockUserModel,
+    mockDbGet,
+    mockDbGetError,
+    makeRequest
 };
