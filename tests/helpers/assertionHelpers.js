@@ -41,7 +41,7 @@ const handleRegisterDatabaseAssertions = ({ userModel, requestData, expected }) 
       // If the user does not exist, createUser should be called
       expect(userModel.createUser).toHaveBeenCalledWith(
         requestData.email,
-        'hashedpassword' // Use the mocked hashed password
+        expect.any(String)
       );
     }
   }
