@@ -144,25 +144,6 @@ const setupMock = (mockFunction, result = null, error = null) => {
     }
 };
 
-const setupUserMocks = ({
-    mockFindUserByEmail,
-    mockCreateUser,
-    mockCreateUserError,
-    userExistsMock,
-    createUserMockResult,
-    createUserMockError,
-  }) => {
-    // Mock user existence
-    mockFindUserByEmail(userExistsMock || null);
-  
-    // Mock user creation (success or error)
-    if (createUserMockError) {
-      mockCreateUserError(createUserMockError);
-    } else {
-      mockCreateUser(createUserMockResult || null);
-    }
-};
-
 const validateSuccessfulLogin = (response, dbMock, requestData, db) => {
     if (!dbMock.result) {
         throw new Error('dbMock.result is required for a valid login scenario');
@@ -190,6 +171,5 @@ module.exports = {
     makeRequest,
     setupDbMock,
     setupMock,
-    setupUserMocks,
     validateSuccessfulLogin
 };

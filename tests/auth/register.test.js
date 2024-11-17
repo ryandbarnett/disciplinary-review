@@ -33,8 +33,6 @@ describe('Register User', () => {
         expected
     }) => {
         it(description, async () => {
-            // Replace setupUserMocks with direct calls to setupMock
-
             // Mock user existence
             setupMock(mockFindUserByEmail, userExistsMock || null);
 
