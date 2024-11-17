@@ -1,7 +1,10 @@
 const loginScenarios = [
     {
         description: 'should log in successfully with correct credentials and return a valid token',
-        dbMock: { result: { user_id: 1, email: 'test@example.com', password: 'hashedpassword' } },
+        dbMock: {
+            result: { user_id: 1, email: 'test@example.com', password: 'hashedpassword' },
+            error: null,
+        },
         requestData: { email: 'test@example.com', password: 'securepassword' },
         expected: {
             status: 200,
@@ -11,7 +14,10 @@ const loginScenarios = [
     },
     {
         description: 'should return a 400 status with an error message when the credentials are incorrect',
-        dbMock: { result: null },
+        dbMock: {
+            result: null,
+            error: null,
+        },
         requestData: { email: 'test@example.com', password: 'wrongpassword' },
         expected: {
             status: 400,
@@ -21,7 +27,7 @@ const loginScenarios = [
     },
     {
         description: 'should return a 400 status when the email is missing from the login request',
-        dbMock: {},
+        dbMock: null, // No database call expected
         requestData: { email: '', password: 'securepassword' },
         expected: {
             status: 400,
@@ -31,7 +37,7 @@ const loginScenarios = [
     },
     {
         description: 'should return a 400 status when the password is missing from the login request',
-        dbMock: {},
+        dbMock: null, // No database call expected
         requestData: { email: 'test@example.com', password: '' },
         expected: {
             status: 400,
@@ -41,7 +47,10 @@ const loginScenarios = [
     },
     {
         description: 'should return a 500 status when a database error occurs during login attempt',
-        dbMock: { error: new Error('Database error') },
+        dbMock: {
+            result: null,
+            error: new Error('Database error'),
+        },
         requestData: { email: 'test@example.com', password: 'securepassword' },
         expected: {
             status: 500,

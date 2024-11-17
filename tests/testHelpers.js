@@ -128,11 +128,12 @@ const makeRequest = (app, method, endpoint, options = {}) => {
     return requestBuilder;
 };
 
-const setupDbMock = (db, dbMock) => {
-    if (dbMock.error) {
-        mockDbGetError(db, dbMock.error);
-    } else {
-        mockDbGet(db, dbMock.result);
+const setupCallbackMock = (mockFunction, result, error) => {
+    if (result !== undefined || error !== undefined) {
+        mockFunction.mockImplementation((...args) => {
+            const callback = args[args.length - 1];
+            callback(error, result);
+        });
     }
 };
 
@@ -169,7 +170,7 @@ module.exports = {
     mockDbGetError,
     mockJwtVerify,
     makeRequest,
-    setupDbMock,
+    setupCallbackMock,
     setupMock,
     validateSuccessfulLogin
 };
