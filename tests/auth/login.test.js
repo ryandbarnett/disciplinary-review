@@ -3,7 +3,7 @@ jest.mock('bcrypt', () => ({
     compare: jest.fn((plain, hashed) => Promise.resolve(plain === 'securepassword' && hashed === 'hashedpassword')),
 }));
 
-const { checkResponse, makeRequest,setupDbMock,handleDatabaseAssertions } = require('../testHelpers');
+const { checkResponse, makeRequest, setupDbMock, handleDatabaseAssertions } = require('../testHelpers');
 const loginScenarios = require('../testScenarios/loginScenarios');
 const db = require('../../models/database');
 const app = require('../../app');

@@ -81,11 +81,16 @@ jest.mock('bcrypt', () => ({
 }));
 
 // Mock userModel methods
-const mockUserModel = (userModel) => ({
-    mockFindUserByEmail: (result) => userModel.findUserByEmail.mockResolvedValue(result),
-    mockCreateUser: (result) => userModel.createUser.mockResolvedValue(result),
-    mockCreateUserError: (error) => userModel.createUser.mockRejectedValue(error),
-});
+const mockUserModel = (userModel) => {
+    userModel.findUserByEmail = jest.fn();
+    userModel.createUser = jest.fn();
+
+    return {
+        mockFindUserByEmail: userModel.findUserByEmail,
+        mockCreateUser: userModel.createUser,
+        mockCreateUserError: userModel.createUser,
+    };
+};
 
 // Mock db.get method
 const mockDbGet = (db, result) => {
@@ -131,11 +136,11 @@ const setupDbMock = (db, dbMock) => {
     }
 };
 
-const setupCreateUserMock = ({ createUserMockResult, createUserMockError, mockCreateUser, mockCreateUserError }) => {
-    if (createUserMockError) {
-      mockCreateUserError(createUserMockError);
-    } else if (createUserMockResult) {
-      mockCreateUser(createUserMockResult);
+const setupMock = (mockFunction, result = null, error = null) => {
+    if (error) {
+        mockFunction.mockRejectedValue(error);
+    } else {
+        mockFunction.mockResolvedValue(result);
     }
 };
 
@@ -184,7 +189,7 @@ module.exports = {
     mockJwtVerify,
     makeRequest,
     setupDbMock,
-    setupCreateUserMock,
+    setupMock,
     setupUserMocks,
     validateSuccessfulLogin
 };

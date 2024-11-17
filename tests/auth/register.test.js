@@ -5,15 +5,20 @@ const {
     mockUserModel, 
     makeRequest, 
     handleRegisterDatabaseAssertions, 
-    setupUserMocks 
+    setupMock
 } = require('../testHelpers');
+
 const registerScenarios = require('../testScenarios/registerScenarios');
 const userModel = require('../../models/user');
 const app = require('../../app');
 
 describe('Register User', () => {
     const endpoint = '/auth/register';
-    const { mockFindUserByEmail, mockCreateUser, mockCreateUserError } = mockUserModel(userModel);
+    const { 
+        mockFindUserByEmail, 
+        mockCreateUser, 
+        mockCreateUserError 
+    } = mockUserModel(userModel);
 
     beforeEach(() => {
         jest.clearAllMocks(); // Reset all mocks
@@ -28,14 +33,17 @@ describe('Register User', () => {
         expected
     }) => {
         it(description, async () => {
-            setupUserMocks({
-                mockFindUserByEmail,
-                mockCreateUser,
-                mockCreateUserError,
-                userExistsMock,
+            // Replace setupUserMocks with direct calls to setupMock
+
+            // Mock user existence
+            setupMock(mockFindUserByEmail, userExistsMock || null);
+
+            // Mock user creation (success or error)
+            setupMock(
+                createUserMockError ? mockCreateUserError : mockCreateUser,
                 createUserMockResult,
                 createUserMockError
-            });
+            );
 
             // Perform the request
             const response = await makeRequest(app, 'post', endpoint, { payload: requestData });
