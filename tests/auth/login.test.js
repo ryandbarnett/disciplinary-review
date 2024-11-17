@@ -7,8 +7,7 @@ const {
     makeRequest,
     mockDbGet,
     mockDbGetError,
-    expectValidLogin,
-    expectBcryptCompare,
+    validateSuccessfulLogin,
     expectNoDatabaseCalls,
     expectDatabaseCall,
 } = require('../testHelpers');
@@ -44,9 +43,7 @@ describe('Login User', () => {
             }
         
             if (expected.validLogin) {
-                expectValidLogin(response, dbMock.result.user_id, requestData.email);
-                expectBcryptCompare(requestData.password, dbMock.result.password);
-                expectDatabaseCall(db.get, 'SELECT * FROM Users WHERE email = ?', [requestData.email]);
+                validateSuccessfulLogin(response, dbMock, requestData, db);
             } else if (expected.noDbCall) {
                 expectNoDatabaseCalls(db.get);
             } else {

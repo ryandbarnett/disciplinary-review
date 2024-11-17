@@ -89,6 +89,12 @@ const makeRequest = (app, method, endpoint, options = {}) => {
     return requestBuilder;
 };
 
+const validateSuccessfulLogin = (response, dbMock, requestData, db) => {
+    expectValidLogin(response, dbMock.result.user_id, requestData.email);
+    expectBcryptCompare(requestData.password, dbMock.result.password);
+    expectDatabaseCall(db.get, 'SELECT * FROM Users WHERE email = ?', [requestData.email]);
+};
+
 module.exports = {
     expectNoDatabaseCalls,
     expectDatabaseCall,
@@ -100,5 +106,6 @@ module.exports = {
     mockDbGet,
     mockDbGetError,
     mockJwtVerify,
-    makeRequest
+    makeRequest,
+    validateSuccessfulLogin
 };
