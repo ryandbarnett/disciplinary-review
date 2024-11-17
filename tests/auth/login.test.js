@@ -15,6 +15,15 @@ const loginScenarios = require('../testScenarios/loginScenarios');
 const db = require('../../models/database');
 const app = require('../../app');
 
+// Helper to set up the database mock
+const setupDbMock = (dbMock) => {
+    if (dbMock.error) {
+        mockDbGetError(db, dbMock.error);
+    } else {
+        mockDbGet(db, dbMock.result);
+    }
+};
+
 describe('Login User', () => {
     const endpoint = '/auth/login';
 
@@ -28,11 +37,7 @@ describe('Login User', () => {
 
     loginScenarios.forEach(({ description, dbMock, requestData, expected }) => {
         it(description, async () => {
-            if (dbMock.error) {
-                mockDbGetError(db, dbMock.error);
-            } else {
-                mockDbGet(db, dbMock.result);
-            }
+            setupDbMock(dbMock);
         
             const response = await makeRequest(app, 'post', endpoint, { payload: requestData });
         
