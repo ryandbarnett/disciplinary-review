@@ -24,6 +24,17 @@ const setupDbMock = (dbMock) => {
     }
 };
 
+// Helper to handle database-related assertions
+const handleDatabaseAssertions = (db, requestData, dbMock, expected, response) => {
+    if (expected.validLogin) {
+        validateSuccessfulLogin(response, dbMock, requestData, db);
+    } else if (expected.noDbCall) {
+        expectNoDatabaseCalls(db.get);
+    } else {
+        expectDatabaseCall(db.get, 'SELECT * FROM Users WHERE email = ?', [requestData.email]);
+    }
+};
+
 describe('Login User', () => {
     const endpoint = '/auth/login';
 
@@ -46,14 +57,8 @@ describe('Login User', () => {
             if ('message' in expected) {
                 expect(response.body.message || null).toBe(expected.message);
             }
-        
-            if (expected.validLogin) {
-                validateSuccessfulLogin(response, dbMock, requestData, db);
-            } else if (expected.noDbCall) {
-                expectNoDatabaseCalls(db.get);
-            } else {
-                expectDatabaseCall(db.get, 'SELECT * FROM Users WHERE email = ?', [requestData.email]);
-            }
+
+            handleDatabaseAssertions(db, requestData, dbMock, expected, response);
         });             
     });
 });

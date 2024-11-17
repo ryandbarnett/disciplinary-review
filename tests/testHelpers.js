@@ -90,6 +90,10 @@ const makeRequest = (app, method, endpoint, options = {}) => {
 };
 
 const validateSuccessfulLogin = (response, dbMock, requestData, db) => {
+    if (!dbMock.result) {
+        throw new Error('dbMock.result is required for a valid login scenario');
+    }
+
     expectValidLogin(response, dbMock.result.user_id, requestData.email);
     expectBcryptCompare(requestData.password, dbMock.result.password);
     expectDatabaseCall(db.get, 'SELECT * FROM Users WHERE email = ?', [requestData.email]);
