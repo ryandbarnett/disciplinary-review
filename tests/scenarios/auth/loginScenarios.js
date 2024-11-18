@@ -1,13 +1,10 @@
-const dbScenarios = require('../shared/dbScenarios');
+const dbMockScenarios = require('../shared/dbMockScenarios');
 const errorScenarios = require('../shared/errorScenarios');
 
 const loginScenarios = [
     {
         description: 'should log in successfully with correct credentials and return a valid token',
-        dbMock: {
-            result: dbScenarios.validUser,
-            error: null,
-        },
+        dbMock: dbMockScenarios.validUser,
         requestData: { email: 'test@example.com', password: 'securepassword' },
         expected: {
             status: 200,
@@ -17,31 +14,25 @@ const loginScenarios = [
     },
     {
         description: 'should return a 400 status with an error message when the credentials are incorrect',
-        dbMock: {
-            result: dbScenarios.noUser,
-            error: null,
-        },
+        dbMock: dbMockScenarios.noUser,
         requestData: { email: 'test@example.com', password: 'wrongpassword' },
         expected: errorScenarios.invalidCredentials,
     },
     {
         description: 'should return a 400 status when the email is missing from the login request',
-        dbMock: null, // No database call expected
+        dbMock: dbMockScenarios.missingDbCall,
         requestData: { email: '', password: 'securepassword' },
         expected: errorScenarios.missingEmail,
     },
     {
         description: 'should return a 400 status when the password is missing from the login request',
-        dbMock: null, // No database call expected
+        dbMock: dbMockScenarios.missingDbCall,
         requestData: { email: 'test@example.com', password: '' },
         expected: errorScenarios.missingPassword,
     },
     {
         description: 'should return a 500 status when a database error occurs during login attempt',
-        dbMock: {
-            result: null,
-            error: dbScenarios.dbError,
-        },
+        dbMock: dbMockScenarios.dbError,
         requestData: { email: 'test@example.com', password: 'securepassword' },
         expected: errorScenarios.dbError,
     },
