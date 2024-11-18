@@ -1,4 +1,6 @@
 const requestDataScenarios = require('../shared/requestDataScenarios');
+const expectedScenarios = require('../shared/expectedScenarios');
+const dbMockScenarios = require('../shared/dbMockScenarios');
 
 const DESCRIPTIONS = {
   success: {
@@ -20,12 +22,7 @@ const registerScenarios = [
       createUserMockResult: 1,
       createUserMockError: null,
       requestData: requestDataScenarios.validCredentials,
-      expected: {
-        status: 201,
-        message: 'User registered successfully',
-        userExists: false,
-        noDbCall: false,
-      },
+      expected: expectedScenarios.successes.userRegistered,
     },
     {
       description: DESCRIPTIONS.errors.userAlreadyExists,
