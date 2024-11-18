@@ -7,7 +7,7 @@ const { makeRequest } = require('../helpers/requestHelpers');
 const { setupCallbackMock } = require('../helpers/mockHelpers');
 const { checkResponse, handleDatabaseAssertions } = require('../helpers/assertionHelpers');
 
-const loginScenarios = require('../scenarios/loginScenarios');
+const loginScenarios = require('../scenarios/auth/loginScenarios');
 const db = require('../../models/database');
 const app = require('../../app');
 

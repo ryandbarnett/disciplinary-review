@@ -1,62 +1,49 @@
+const dbScenarios = require('../shared/dbScenarios');
+const errorScenarios = require('../shared/errorScenarios');
+
 const loginScenarios = [
     {
         description: 'should log in successfully with correct credentials and return a valid token',
         dbMock: {
-            result: { user_id: 1, email: 'test@example.com', password: 'hashedpassword' },
+            result: dbScenarios.validUser,
             error: null,
         },
         requestData: { email: 'test@example.com', password: 'securepassword' },
         expected: {
             status: 200,
-            message: null, // No message for successful login
+            message: null,
             validLogin: true,
         },
     },
     {
         description: 'should return a 400 status with an error message when the credentials are incorrect',
         dbMock: {
-            result: null,
+            result: dbScenarios.noUser,
             error: null,
         },
         requestData: { email: 'test@example.com', password: 'wrongpassword' },
-        expected: {
-            status: 400,
-            message: 'Invalid email or password',
-            validLogin: false,
-        },
+        expected: errorScenarios.invalidCredentials,
     },
     {
         description: 'should return a 400 status when the email is missing from the login request',
         dbMock: null, // No database call expected
         requestData: { email: '', password: 'securepassword' },
-        expected: {
-            status: 400,
-            message: 'Email is required',
-            noDbCall: true,
-        },
+        expected: errorScenarios.missingEmail,
     },
     {
         description: 'should return a 400 status when the password is missing from the login request',
         dbMock: null, // No database call expected
         requestData: { email: 'test@example.com', password: '' },
-        expected: {
-            status: 400,
-            message: 'Password is required',
-            noDbCall: true,
-        },
+        expected: errorScenarios.missingPassword,
     },
     {
         description: 'should return a 500 status when a database error occurs during login attempt',
         dbMock: {
             result: null,
-            error: new Error('Database error'),
+            error: dbScenarios.dbError,
         },
         requestData: { email: 'test@example.com', password: 'securepassword' },
-        expected: {
-            status: 500,
-            message: 'Internal server error',
-            validLogin: false,
-        },
+        expected: errorScenarios.dbError,
     },
 ];
 
