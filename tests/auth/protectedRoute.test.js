@@ -5,7 +5,7 @@ jest.mock('jsonwebtoken');
 const { makeRequest } = require('../helpers/requestHelpers');
 const { mockJwtVerify } = require('../helpers/utilityHelpers');
 const app = require('../../app');
-const scenarios = require('../testScenarios/protectedRouteScenarios');
+const scenarios = require('../scenarios/protectedRouteScenarios');
 
 describe('Protected Route', () => {
     const endpoint = '/dashboard';

@@ -8,7 +8,7 @@ const { makeRequest } = require('../helpers/requestHelpers');
 const { mockUserModel, setupMock } = require('../helpers/mockHelpers');
 const { handleRegisterDatabaseAssertions } = require('../helpers/assertionHelpers');
 
-const registerScenarios = require('../testScenarios/registerScenarios');
+const registerScenarios = require('../scenarios/registerScenarios');
 const userModel = require('../../models/user');
 const app = require('../../app');
 
