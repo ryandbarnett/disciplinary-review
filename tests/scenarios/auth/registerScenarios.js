@@ -1,3 +1,5 @@
+const requestDataScenarios = require('../shared/requestDataScenarios');
+
 const DESCRIPTIONS = {
   success: {
       userRegistered: 'should register a new user',
@@ -17,7 +19,7 @@ const registerScenarios = [
       userExistsMock: null,
       createUserMockResult: 1,
       createUserMockError: null,
-      requestData: { email: `test${Date.now()}@example.com`, password: 'securepassword' },
+      requestData: requestDataScenarios.validCredentials,
       expected: {
         status: 201,
         message: 'User registered successfully',
