@@ -1,6 +1,19 @@
+const DESCRIPTIONS = {
+  success: {
+      userRegistered: 'should register a new user',
+  },
+  errors: {
+      userAlreadyExists: 'should not register a user with an existing email',
+      invalidEmail: 'should return 400 for invalid email',
+      weakPassword: 'should return 400 for weak password',
+      dbError: 'should return 500 on database error',
+  },
+};
+
+
 const registerScenarios = [
     {
-      description: 'should register a new user',
+      description: DESCRIPTIONS.success.userRegistered,
       userExistsMock: null,
       createUserMockResult: 1,
       createUserMockError: null,
@@ -13,7 +26,7 @@ const registerScenarios = [
       },
     },
     {
-      description: 'should not register a user with an existing email',
+      description: DESCRIPTIONS.errors.userAlreadyExists,
       userExistsMock: { email: 'existing@example.com' },
       createUserMockResult: null,
       createUserMockError: null,
@@ -26,7 +39,7 @@ const registerScenarios = [
       },
     },
     {
-      description: 'should return 400 for invalid email',
+      description: DESCRIPTIONS.errors.invalidEmail,
       userExistsMock: null,
       createUserMockResult: null,
       createUserMockError: null,
@@ -39,7 +52,7 @@ const registerScenarios = [
       },
     },
     {
-      description: 'should return 400 for weak password',
+      description: DESCRIPTIONS.errors.weakPassword,
       userExistsMock: null,
       createUserMockResult: null,
       createUserMockError: null,
@@ -52,7 +65,7 @@ const registerScenarios = [
       },
     },
     {
-      description: 'should return 500 on database error',
+      description: DESCRIPTIONS.errors.dbError,
       userExistsMock: null,
       createUserMockResult: null,
       createUserMockError: new Error('Database error'),
