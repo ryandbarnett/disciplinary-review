@@ -1,41 +1,49 @@
 const dbMockScenarios = require('../shared/dbMockScenarios');
-const errorScenarios = require('../shared/errorScenarios');
 const requestDataScenarios = require('../shared/requestDataScenarios');
+const expectedScenarios = require('../shared/expectedScenarios');
+
+const DESCRIPTIONS = {
+    success: {
+        validLogin: 'should log in successfully with correct credentials and return a valid token',
+    },
+    errors: {
+        invalidCredentials: 'should return a 400 status with an error message when the credentials are incorrect',
+        missingEmail: 'should return a 400 status when the email is missing from the login request',
+        missingPassword: 'should return a 400 status when the password is missing from the login request',
+        dbError: 'should return a 500 status when a database error occurs during login attempt',
+    },
+};
 
 const loginScenarios = [
     {
-        description: 'should log in successfully with correct credentials and return a valid token',
+        description: DESCRIPTIONS.success.validLogin,
         dbMock: dbMockScenarios.validUser,
         requestData: requestDataScenarios.validCredentials,
-        expected: {
-            status: 200,
-            message: null,
-            validLogin: true,
-        },
+        expected: expectedScenarios.successes.successLogin,
     },
     {
-        description: 'should return a 400 status with an error message when the credentials are incorrect',
+        description: DESCRIPTIONS.errors.invalidCredentials,
         dbMock: dbMockScenarios.noUser,
         requestData: requestDataScenarios.incorrectPassword,
-        expected: errorScenarios.invalidCredentials,
+        expected: expectedScenarios.errors.invalidCredentials,
     },
     {
-        description: 'should return a 400 status when the email is missing from the login request',
+        description: DESCRIPTIONS.errors.missingEmail,
         dbMock: dbMockScenarios.missingDbCall,
         requestData: requestDataScenarios.missingEmail,
-        expected: errorScenarios.missingEmail,
+        expected: expectedScenarios.errors.missingEmail,
     },
     {
-        description: 'should return a 400 status when the password is missing from the login request',
+        description: DESCRIPTIONS.errors.missingPassword,
         dbMock: dbMockScenarios.missingDbCall,
         requestData: requestDataScenarios.missingPassword,
-        expected: errorScenarios.missingPassword,
+        expected: expectedScenarios.errors.missingPassword,
     },
     {
-        description: 'should return a 500 status when a database error occurs during login attempt',
+        description: DESCRIPTIONS.errors.dbError,
         dbMock: dbMockScenarios.dbError,
         requestData: requestDataScenarios.validCredentials,
-        expected: errorScenarios.dbError,
+        expected: expectedScenarios.errors.internalServerError,
     },
 ];
 
