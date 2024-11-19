@@ -30,14 +30,16 @@ db.serialize(() => {
     student_name TEXT NOT NULL,
     student_id TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    status TEXT DEFAULT 'Pending'
+    status TEXT DEFAULT 'Pending',
+    created_by INTEGER, -- Links to the admin who created this infraction
+    FOREIGN KEY (created_by) REFERENCES Users(user_id)
   )`);
 
   // Create Voters table
   db.run(`CREATE TABLE IF NOT EXISTS Voters (
     voter_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    infraction_id INTEGER,
-    user_id INTEGER, -- Links directly to Users table
+    infraction_id INTEGER NOT NULL, -- Links to the infraction being voted on
+    user_id INTEGER NOT NULL, -- Links to the user assigned to vote
     has_voted BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (infraction_id) REFERENCES Infractions(infraction_id),
     FOREIGN KEY (user_id) REFERENCES Users(user_id)
@@ -46,9 +48,9 @@ db.serialize(() => {
   // Create Votes table
   db.run(`CREATE TABLE IF NOT EXISTS Votes (
     vote_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    infraction_id INTEGER,
-    voter_id INTEGER,
-    vote TEXT CHECK (vote IN ('YES', 'NO')), -- Removed 'ABSTAIN'
+    infraction_id INTEGER NOT NULL, -- Links to the infraction being voted on
+    voter_id INTEGER NOT NULL, -- Links to the voter casting the vote
+    vote TEXT CHECK (vote IN ('YES', 'NO')), -- Ensures only 'YES' or 'NO' votes
     comments TEXT,
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (infraction_id) REFERENCES Infractions(infraction_id),
