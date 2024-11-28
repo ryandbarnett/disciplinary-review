@@ -4,12 +4,5 @@ node_modules/
 # Environment variables
 .env
 
-# Logs
-*.log
-
 # SQLite database files
 /data/disciplinaryReview.db
-*.db-journal
-
-# VS Code settings (optional)
-.vscode/
