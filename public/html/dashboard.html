@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <!-- Adjust the relative path to your CSS file -->
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Disciplinary Review Dashboard</h1>
+        <button id="logoutButton">Logout</button>
+    </header>
+    <main>
+        <section id="adminTools" style="display: none;">
+            <h2>Admin Tools</h2>
+            <button id="createInfraction">Create New Infraction</button>
+            <div id="infractionsList"></div>
+        </section>
+        <section id="userTools" style="display: none;">
+            <h2>Assigned Infractions</h2>
+            <div id="userInfractions"></div>
+        </section>
+    </main>
+    <!-- Adjust the relative path to your JS file -->
+    <script src="../js/dashboard.js"></script>
+</body>
+</html>
