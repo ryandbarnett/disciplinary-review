@@ -1,6 +1,7 @@
 const express = require('express');
-const authRoutes = require('./routes/auth');
-const userRoutes = require('./routes/userRoutes'); // Add this line
+const authRoutes = require('./routes/auth'); // Existing auth routes
+const userRoutes = require('./routes/userRoutes'); // Existing user routes
+const infractionRoutes = require('./routes/infractionRoutes'); // New infraction routes
 const { authenticateToken } = require('./middleware/authMiddleware');
 const setupMiddleware = require('./middleware');
 const loadEnvConfig = require('./config/envConfig');
@@ -16,7 +17,10 @@ setupMiddleware(app);
 app.use('/auth', authRoutes);
 
 // Use user routes for fetching users
-app.use(userRoutes); // Add this line
+app.use(userRoutes);
+
+// Use infraction routes for creating and managing infractions
+app.use(infractionRoutes);
 
 // Protected route for dashboard
 app.get('/dashboard', authenticateToken, (req, res) => {
