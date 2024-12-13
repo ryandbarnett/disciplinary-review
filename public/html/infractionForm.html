@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Infraction Form</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Create Infraction</title>
+    <link rel="stylesheet" href="../css/styles.css">
 </head>
 <body>
     <header>
@@ -21,57 +21,22 @@
                 <input type="text" id="studentName" name="studentName" required>
             </div>
             <div class="form-group">
-                <label for="studentSNumber">Student S Number (8 digits):</label>
-                <input type="text" id="studentSNumber" name="studentSNumber" pattern="\\d{8}" required>
-                <small>The S Number must be exactly 8 digits.</small>
+                <label for="studentSNumber">Student S Number:</label>
+                <input type="text" id="studentSNumber" name="studentSNumber" required>
             </div>
             <div class="form-group">
                 <label for="voters">Assign Voters:</label>
                 <select id="voters" name="voters[]" multiple required>
-                    <!-- Dynamically populate with available users -->
+                    <!-- Users will be dynamically populated here -->
                 </select>
                 <small>Select at least one voter.</small>
             </div>
-            <div class="form-actions">
-                <button type="submit">Submit</button>
-                <button type="reset">Reset</button>
-            </div>
+            <button type="submit">Submit</button>
         </form>
     </main>
     <footer>
         <p>&copy; 2024 Disciplinary Review App</p>
     </footer>
-    <script>
-        // Validation Script
-        document.getElementById('infractionForm').addEventListener('submit', function (e) {
-            const description = document.getElementById('infractionDescription').value.trim();
-            const studentName = document.getElementById('studentName').value.trim();
-            const studentSNumber = document.getElementById('studentSNumber').value.trim();
-            const voters = document.getElementById('voters').selectedOptions;
-
-            // Validate S Number
-            const sNumberPattern = /^\d{8}$/;
-            if (!description) {
-                e.preventDefault();
-                alert('Please provide a description of the infraction.');
-                return;
-            }
-            if (!studentName) {
-                e.preventDefault();
-                alert('Please provide the student\'s name.');
-                return;
-            }
-            if (!sNumberPattern.test(studentSNumber)) {
-                e.preventDefault();
-                alert('The S Number must be exactly 8 digits.');
-                return;
-            }
-            if (voters.length < 1) {
-                e.preventDefault();
-                alert('Please select at least one voter.');
-                return;
-            }
-        });
-    </script>
+    <script src="../js/infractionForm.js"></script>
 </body>
 </html>
