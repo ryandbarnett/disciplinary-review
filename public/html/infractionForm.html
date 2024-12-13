@@ -25,11 +25,17 @@
                 <input type="text" id="studentSNumber" name="studentSNumber" required>
             </div>
             <div class="form-group">
-                <label for="voters">Assign Voters:</label>
+                <label for="voters">Available Voters:</label>
                 <select id="voters" name="voters[]" multiple required>
-                    <!-- Users will be dynamically populated here -->
+                    <!-- Dynamically populated voters will go here -->
                 </select>
-                <small>Select at least one voter.</small>
+                <button type="button" id="assignVotersButton">Assign Voters</button>
+            </div>
+            <div class="form-group">
+                <h3>Assigned Voters</h3>
+                <ul id="assignedVoters">
+                    <!-- Assigned voters will be listed here -->
+                </ul>
             </div>
             <button type="submit">Submit</button>
         </form>
