@@ -1,7 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
     const voterSelect = document.getElementById('voters');
     const assignedVotersList = document.getElementById('assignedVoters');
+    const assignedVotersInputs = document.getElementById('assignedVotersInputs');
     const assignVotersButton = document.getElementById('assignVotersButton');
+    const unassignVotersButton = document.getElementById('unassignVotersButton');
 
     // Fetch users and populate the "Available Voters" dropdown
     fetch('/api/users')
@@ -12,12 +14,9 @@ document.addEventListener('DOMContentLoaded', () => {
             return response.json();
         })
         .then((users) => {
-            // Clear existing options
             voterSelect.innerHTML = '';
-
-            // Populate the dropdown with eligible voters
             users.forEach((user) => {
-                if (user.role !== 'student') { // Assuming students can't vote
+                if (user.role !== 'student') {
                     const option = document.createElement('option');
                     option.value = user.user_id;
                     option.textContent = `${user.email} (${user.role})`;
@@ -30,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
             voterSelect.innerHTML = '<option disabled>Error loading voters</option>';
         });
 
-    // Handle "Assign Voters" button click
+    // Assign voters
     assignVotersButton.addEventListener('click', () => {
         const selectedOptions = Array.from(voterSelect.selectedOptions);
 
@@ -40,16 +39,50 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         selectedOptions.forEach((option) => {
-            // Create a list item for the assigned voter
             const listItem = document.createElement('li');
             listItem.textContent = option.textContent;
-            listItem.dataset.userId = option.value; // Store user_id for submission
+            listItem.dataset.userId = option.value;
 
-            // Append to the "Assigned Voters" section
+            listItem.addEventListener('click', () => {
+                listItem.classList.toggle('selected');
+            });
+
             assignedVotersList.appendChild(listItem);
 
-            // Remove the voter from the dropdown
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'assignedVoters[]';
+            hiddenInput.value = option.value;
+            assignedVotersInputs.appendChild(hiddenInput);
+
             option.remove();
+        });
+    });
+
+    // Unassign voters
+    unassignVotersButton.addEventListener('click', () => {
+        const selectedItems = Array.from(assignedVotersList.querySelectorAll('.selected'));
+
+        if (selectedItems.length === 0) {
+            alert('Please select at least one voter to unassign.');
+            return;
+        }
+
+        selectedItems.forEach((item) => {
+            const userId = item.dataset.userId;
+
+            // Add the voter back to the dropdown
+            const option = document.createElement('option');
+            option.value = userId;
+            option.textContent = item.textContent;
+            voterSelect.appendChild(option);
+
+            // Remove the hidden input
+            const hiddenInput = assignedVotersInputs.querySelector(`input[value="${userId}"]`);
+            if (hiddenInput) hiddenInput.remove();
+
+            // Remove the voter from the "Assigned Voters" section
+            item.remove();
         });
     });
 });
